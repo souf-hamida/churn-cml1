@@ -1,0 +1,21 @@
+# Environnement virtuel et caches Python
+.venv/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+
+# Données : tout le contenu de data/, sauf le README
+/data/*
+!/data/README.txt
+# TP4 (provisoire) : données versionnées pour que la CI puisse entraîner ;
+# elles seront suivies par DVC au TP5
+!/data/churn.csv
+
+# Artefacts produits par l'entraînement, sauf le fichier qui garde le dossier
+/artifacts/*
+!/artifacts/.gitkeep
+# Rapport généré par churn.report (TP4)
+report.md
+
+# Secrets (mots de passe, jetons)
+.env

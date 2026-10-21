@@ -1,0 +1,36 @@
+# Configuration unique du fil rouge churn.
+# Même schéma que params.yaml (Partie 6) : chaque clé peut être surchargée en ligne de
+# commande, par exemple : python -m churn.train --set model.C=0.1
+data:
+  source: csv                  # seul format pris en charge dans le fil rouge
+  csv_path: data/churn.csv
+  target: Exited
+  drop_columns: [RowNumber, CustomerId, Surname]   # identifiants : jamais des variables
+  max_age: 80                  # nettoyage : clients de plus de 80 ans écartés (12 lignes)
+
+split:
+  test_size: 0.2
+  random_state: 42             # graine unique : split, modèle, SMOTE
+  stratify: true
+
+features:
+  numeric: [CreditScore, Age, Tenure, Balance, NumOfProducts, EstimatedSalary]
+  binary: [HasCrCard, IsActiveMember]
+  categorical: [Geography, Gender]
+
+model:
+  name: logistic_regression    # logistic_regression | random_forest
+  C: 1.0                       # logistic_regression
+  max_iter: 1000               # logistic_regression
+  n_estimators: 300            # random_forest
+  max_depth: 10                # random_forest
+
+imbalance:
+  method: class_weight         # none | class_weight | smote
+  smote_sampling_strategy: auto
+
+evaluation:
+  min_f1: 0.45                 # porte de qualité (CI) : F1 de la classe 1 sur le test
+  min_roc_auc: 0.75
+
+artifacts_dir: artifacts

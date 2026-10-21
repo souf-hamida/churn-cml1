@@ -1,0 +1,7 @@
+# Ce qui ne doit pas être envoyé à Docker (ni copié dans l'image)
+.git
+.venv
+**/__pycache__
+data
+artifacts
+debogage

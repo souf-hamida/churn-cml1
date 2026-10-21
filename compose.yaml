@@ -1,0 +1,24 @@
+# TP3, partie 6 : entraîner puis servir, en une seule commande.
+#   docker compose up -d --build      puis      docker compose down
+
+# Nom du projet : préfixe des conteneurs et des images créés par Compose
+name: mlt-churn
+
+services:
+  train:
+    build: .
+    volumes:
+      - ./data:/app/data:ro
+      - ./artifacts:/app/artifacts
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./artifacts:/app/artifacts:ro
+    depends_on:
+      train:
+        condition: service_completed_successfully

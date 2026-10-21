@@ -1,0 +1,20 @@
+# Image d'INFÉRENCE (API FastAPI) du projet churn (TP3).
+#   docker build -f Dockerfile.api -t mlt-churn-api:0.1.0 .
+#   docker run -d --name mlt-churn-api -p 8000:8000 -v "$(pwd)/artifacts:/app/artifacts:ro" mlt-churn-api:0.1.0
+# Le modèle n'est pas copié dans l'image : le dossier artifacts/ est monté.
+FROM python:3.12-slim
+WORKDIR /app
+
+# Les bibliothèques de l'entraînement ET celles de l'API
+COPY requirements.txt requirements-api.txt ./
+RUN pip install -r requirements.txt -r requirements-api.txt
+
+# Le code du projet (dont le dossier api/) et le paquet churn
+COPY . .
+RUN pip install .
+
+# Version du modèle, recopiée dans chaque réponse de l'API
+ENV MODEL_VERSION=0.1.0
+
+EXPOSE 8000
+CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]

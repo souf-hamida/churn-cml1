@@ -1,0 +1,7 @@
+# Outils de développement : tests et lint (poste de travail et CI)
+-r requirements.txt
+# API d'inférence et ses tests
+-r requirements-api.txt
+httpx==0.28.1
+pytest==9.1.1
+ruff==0.17.1

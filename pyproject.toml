@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "churn"
+version = "0.1.0"
+description = "Fil rouge MLOps : prédiction du départ des clients d'une banque (Exited = 0/1)"
+readme = "README.md"
+requires-python = ">=3.11"
+# Versions épinglées = versions réellement testées (Python 3.11.9 local, 3.12 conteneur).
+dependencies = [
+    "numpy==2.4.6",
+    "pandas==3.0.6",
+    "scikit-learn==1.9.1",
+    "imbalanced-learn==0.14.2",
+    "matplotlib==3.11.2",
+    "joblib==1.6.0",
+    "PyYAML==6.0.3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==9.1.1",
+    "ruff==0.17.1",
+]
+# API d'inférence (FastAPI) et client de test
+api = [
+    "fastapi==0.143.3",
+    "uvicorn==0.54.0",
+    "pydantic==2.14.1",
+    "httpx==0.28.1",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+# Permet de lancer pytest sans installation (src layout) ; `pip install -e .` reste recommandé.
+pythonpath = ["src", "."]
+testpaths = ["tests"]
+addopts = "-ra"
+# Starlette 1.8 annonce le remplacement de httpx par httpx2 pour TestClient
+filterwarnings = ["ignore:Using `httpx` with `starlette.testclient` is deprecated"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = ["notebooks"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]

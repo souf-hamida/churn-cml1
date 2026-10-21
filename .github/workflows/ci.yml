@@ -1,0 +1,58 @@
+# Workflow du projet churn à la fin du TP4 : tests, puis entraînement et rapport CML dans la PR.
+name: ci-churn
+
+# Quand le workflow s'exécute : à chaque pull request, et à chaque push sur main (après une fusion).
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Droits du jeton GITHUB_TOKEN : lire le code, écrire un commentaire dans les pull requests (CML).
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v7
+      - name: Installer Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Installer les dépendances
+        run: |
+          pip install -r requirements-dev.txt
+          pip install -e .
+      - name: Lancer les tests
+        run: pytest -q
+
+  train:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v7
+      - name: Installer Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Installer les dépendances
+        run: |
+          pip install -r requirements.txt
+          pip install -e .
+      - name: Entraîner le modèle
+        run: python -m churn.train --config config/train.yaml
+      - name: Écrire le rapport
+        run: |
+          python -m churn.report --current artifacts \
+            --image artifacts/confusion_matrix.png --out report.md
+      - name: Installer CML
+        uses: iterative/setup-cml@v2
+      - name: Publier le rapport dans la pull request
+        if: github.event_name == 'pull_request'
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: cml comment create report.md
